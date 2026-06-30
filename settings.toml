@@ -1,0 +1,20 @@
+duckdb = "db_todo.duckdb"
+
+[dic]
+sources = "dic_sources.xlsx"
+schema = "dic_schema.xlsx"
+xbr = "dic_xbr.xlsx"
+groups = "dic_groups.xlsx"
+
+[db]
+xbr = "C:/Users/Public/MyAcctg/xbrl/db_xbr.accdb"
+
+[dpaths]
+temp = "d0_temp"
+extr = "d1_extr"
+transf = "d2_transf"
+load = "d3_load"
+raw = "d4_raw"
+pproc = "d5_pproc"
+eda = "d6_eda"
+final = "d7_final"
