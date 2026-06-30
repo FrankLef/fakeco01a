@@ -3,7 +3,7 @@
 from rich import print as rprint
 
 
-def main(is_skipped: bool =True) -> None:
+def main(is_skipped: bool = True) -> None:
     """Main function.
 
     Args:
