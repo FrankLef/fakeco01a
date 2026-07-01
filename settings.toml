@@ -1,4 +1,4 @@
-duckdb = "db_todo.duckdb"
+duckdb = "fakeco01a.duckdb"
 
 [bag]
 sources = "bag_sources.xlsx"
