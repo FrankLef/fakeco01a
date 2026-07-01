@@ -29,6 +29,6 @@ project code.
 
 ::: s6_eda.run99a_todo
 
-## Finalize `s9_teardown`
+## Finalize `s9_teard`
 
 ::: s9_teardown.run99a_todo
