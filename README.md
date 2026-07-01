@@ -140,7 +140,7 @@ Priority|Name|Dir|Description
 4|***ra***|`s4_raw`|Raw data
 5|***pp***|`s5_pproc`|Pre-processing
 6|***ed***|`s6_eda`|E.D.A.
-9|***te***|`s9_teardown`|Tear down
+9|***te***|`s9_teard`|Tear down
 
 ### Directory Structure
 
@@ -193,7 +193,7 @@ fakeco01a
 │   ├── _workflow             <- CLI used by __main__.py to run the modules.
 |   |   ├── config.json       <- Configuration file used by `workflow`.
 |   |   └── ...
-│   ├── s0_setup              <- Code used for settting up the project.
+│   ├── s0_setup              <- Code used for setting up the project.
 │   │   ├── __init__.py
 |   |   └── ...
 |   ├── s1_extr               <- Code to extract the raw data.
@@ -211,7 +211,7 @@ fakeco01a
 |   ├── s5_eda                <- Code for exploratory data analysis (EDA).
 │   │   ├── __init__.py
 |   |   └── ...
-|   ├── s9_teardown           <- Code used to finish off the project.
+|   ├── s9_teard              <- Code used to tear down the project.
 │   │   ├── __init__.py
 |   |   └── ...
 |   └── ...
