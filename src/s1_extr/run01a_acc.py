@@ -13,13 +13,8 @@ def main() -> None:
     table_nm: str = "sales_raw"
     accdb = inst_acc(db_choice="db")
     conn = accdb[0]
-    # check = conn.test_connect()
-    # if check:
-    #     msg: str = f"MS Access connect is ok.\n{accdb[1]}"
-    #     rprint(msg)
     qry = f"SELECT * FROM {table_nm};"
     data = conn.read(qry)
-    # data.info()
     with ddb.connect(duckdb_path) as conn:
         msg: str = f"Uploading '{table_nm}' to 'duckdb'. {data.shape[0]} rows."
         rprint(msg)
