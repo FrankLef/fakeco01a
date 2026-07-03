@@ -1,6 +1,8 @@
 """Convert to date dtype."""
 
 import duckdb as ddb
+
+# from typing import Iterable
 from config import settings
 import pandas as pd
 
@@ -8,10 +10,17 @@ import pandas as pd
 duckdb_path = settings.paths.duckdb
 
 
-def calc_freq_ratios(
+def get_data(conn: ddb.DuckDBPyConnection, table_nm: str) -> pd.DataFrame:
+    qry = f"FROM {table_nm}"
+    data = conn.sql(qry).df()
+    data = data.select_dtypes(include="str")
+    return data
+
+
+def calc_freq_stats(
     data: pd.DataFrame, freq_ratio_tol: float = 95 / 5, uniq_pct_tol: float = 0.05
 ) -> pd.DataFrame:
-    summary_data = []
+    summary = []
     for col in data.columns:
         # Get sorted frequencies of unique values (excluding NaNs by default)
         counts = data[col].value_counts()
@@ -32,35 +41,33 @@ def calc_freq_ratios(
 
         nzv = (freq_ratio >= freq_ratio_tol) & (uniq_pct <= uniq_pct_tol)
 
-        summary_data.append(
+        summary.append(
             {
                 "name": col,
                 "most_freq": most_freq,
                 "second_freq": second_freq,
+                "freq_ratio": freq_ratio,
                 "nuniq": nuniq,
                 "nvalid": nvalid,
-                "freq_ratio": freq_ratio,
                 "uniq_pct": uniq_pct,
                 "nzv": nzv,
             }
         )
 
-    freq_df = pd.DataFrame(summary_data)
-    return freq_df
+    summary_df = pd.DataFrame(summary)
+    return summary_df
 
 
 def main() -> None:
-    # could use 97.5 / 2.5 to be very strict
+    # NOTE: could use 90 / 10 to be less strict
     freq_ratio_tol: float = 95 / 5
-    # use uniq_pct cutoff 0.05 because large data set, small sets can use 0.10
+    # NOTE: use 0.05 because large data set, small sets can use 0.10
     uniq_pct_tol: float = 0.05
     table_nm: str = "sales"
     with ddb.connect(duckdb_path) as conn:
-        qry = f"FROM {table_nm}"
-        data = conn.sql(qry).df()
-    data_str = data.select_dtypes(include="str")
-    freq_df = calc_freq_ratios(
+        data_str = get_data(conn, table_nm=table_nm)
+    stats_df = calc_freq_stats(
         data_str, freq_ratio_tol=freq_ratio_tol, uniq_pct_tol=uniq_pct_tol
     )
-    print("Number of columns with near-zero variance:", sum(freq_df["nzv"]))
-    print("Frequency Summary:\n", freq_df)
+    print("Number of columns with near-zero variance:", sum(stats_df["nzv"]))
+    print("Frequency Summary:\n", stats_df)
