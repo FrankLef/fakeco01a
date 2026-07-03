@@ -12,15 +12,17 @@ data_path = settings.paths.data
 sources_xl = settings.bag.sources
 schema_xl = settings.bag.schema
 output_xl = settings.bag.output
+groups_xl = settings.bag.groups
 
 
 cache_path: Path = Path(data_path).joinpath(".dicz_cache")
-mem = Memory(cache_path, verbose=0)
+memory = Memory(cache_path, verbose=0)
 
 specs = {
     "sources": (sources_xl, "data"),
     "schema": (schema_xl, "data"),
     "output": (output_xl, "data"),
+    "groups": (groups_xl, "data"),
 }
 
 
@@ -34,7 +36,7 @@ def get_mtimes(specs: dict[str, Any]) -> tuple[float, ...]:
     return tuple(mtimes)
 
 
-@mem.cache
+@memory.cache
 def initialize_dicz(
     name: str, specs: dict[str, Any], mtimes: tuple[float, ...]
 ) -> Dicz:
