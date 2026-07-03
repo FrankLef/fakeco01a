@@ -1,4 +1,4 @@
-"""Convert to date dtype."""
+"""Cast to date dtype and handle NA values."""
 
 import duckdb as ddb
 from config import settings
@@ -17,3 +17,5 @@ def main() -> None:
         for var in ["date_livraison"]:
             # use coerce to assign NaT (Not a Time)
             data[var] = pd.to_datetime(data[var], errors="coerce").dt.date
+        qry = f"CREATE OR REPLACE TABLE {table_nm} AS SELECT * FROM data;"
+        conn.sql(qry)

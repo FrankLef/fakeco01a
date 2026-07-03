@@ -1,4 +1,4 @@
-"""Extract data from MS Access."""
+"""Extract data from MS Access and set primary key."""
 
 import duckdb as ddb
 from config import settings
