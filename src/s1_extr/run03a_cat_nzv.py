@@ -1,4 +1,4 @@
-"""Fit NZV columns for string."""
+"""Fit NZV columns for category."""
 
 import duckdb as ddb
 

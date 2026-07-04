@@ -1,12 +1,15 @@
 import pandas as pd
+from typing import Any
+from pathlib import Path
 from feature_engine.selection import (
     DropConstantFeatures,
     DropDuplicateFeatures,
     DropCorrelatedFeatures,
 )
+import json
 
 
-def main(data: pd.DataFrame, specs: dict[str, float]):
+def get_dict(data: pd.DataFrame, specs: dict[str, float]) -> dict[str, Any]:
     results = {}
     for name, tol in specs.items():
         if name == "const":
@@ -28,4 +31,12 @@ def main(data: pd.DataFrame, specs: dict[str, float]):
         else:
             msg: str = f"'{name}' is an invalid feature selection method."
             raise KeyError(msg)
+    return results
+
+
+def main(data: pd.DataFrame, specs: dict[str, float], path: Path | None):
+    results = get_dict(data, specs=specs)
+    if path:
+        with open(path, "w", encoding="utf-8") as file:
+            json.dump(results, file, default=list)
     return results

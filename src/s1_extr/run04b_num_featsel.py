@@ -6,9 +6,10 @@ import pandas as pd
 from rich import print as rprint
 from rich.pretty import pprint as rpprint
 
-from .feat_select import main as feat_sel
+from .select_feat import main as feat_sel
 
 duckdb_path = settings.paths.duckdb
+data_path = settings.paths.data
 
 
 def get_data(
@@ -28,6 +29,7 @@ def main() -> None:
     with ddb.connect(duckdb_path) as conn:
         data_num = get_data(conn, table_nm=table_nm, dtypes=dtypes)
     specs = {"const": 1, "quasi_const": 0.9, "dupl": 0, "corr": 0.9}
-    results = feat_sel(data_num, specs=specs)
+    path = data_path.joinpath("featsel_num.json")
+    results = feat_sel(data_num, specs=specs, path=path)
     rprint(f"Feature selections for {dtypes}:")
     rpprint(results)

@@ -1,4 +1,4 @@
-"""Feature selection for ranked string columns."""
+"""Feature selection for category columns."""
 
 import duckdb as ddb
 
@@ -7,9 +7,10 @@ import pandas as pd
 from rich import print as rprint
 from rich.pretty import pprint as rpprint
 
-from .feat_select import main as feat_sel
+from .select_feat import main as feat_sel
 
 duckdb_path = settings.paths.duckdb
+data_path = settings.paths.data
 
 
 def get_data(
@@ -41,6 +42,7 @@ def main() -> None:
         data_rnk = get_data(conn, table_nm=table_nm, dtypes=dtypes)
     data_int = cast_cat2int(data_rnk)
     specs = {"const": 1, "quasi_const": 0.9, "dupl": 0, "corr": 0.9}
-    results = feat_sel(data_int, specs=specs)
+    path = data_path.joinpath("featsel_cat.json")
+    results = feat_sel(data_int, specs=specs, path=path)
     rprint("Feature selections for categories:")
     rpprint(results)
