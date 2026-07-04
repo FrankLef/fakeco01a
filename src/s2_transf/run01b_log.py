@@ -34,6 +34,6 @@ def main() -> None:
         vars: list[str | int] = list(the_cols.values())
         lct = LogCpTransformer(variables=vars, base="10", C=1)
         lct.fit(data)
-        data_lg = lct.transform(data)  # noqa
+        data_lg = lct.transform(data)  # noqa: F841
         qry: str = f"CREATE OR REPLACE TABLE {table_nm} AS SELECT * FROM data_lg;"
         conn.sql(qry)

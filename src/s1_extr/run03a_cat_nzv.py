@@ -29,9 +29,8 @@ def main() -> None:
     freq_ratio_tol: float = 95 / 5
     # NOTE: use 0.05 because large data set, small sets can use 0.10
     uniq_pct_tol: float = 0.05
-    dtypes = ["str"]
     with ddb.connect(duckdb_path) as conn:
-        data_str = get_data(conn, table_nm=table_nm, dtypes=dtypes)
+        data_str = get_data(conn, table_nm=table_nm, dtypes=["category"])
         stats_df = calc_nzv_str(
             data_str, freq_ratio_tol=freq_ratio_tol, uniq_pct_tol=uniq_pct_tol
         )
