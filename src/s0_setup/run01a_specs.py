@@ -1,10 +1,10 @@
 """Test the existence of data dictionaries."""
 
-from src._registry.dicz import dicz
+from src._registry.specs import specs_mstr
 
 
 def main() -> None:
-    print(dicz)
+    print(specs_mstr)
 
 
 if __name__ == "__main__":
