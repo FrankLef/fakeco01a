@@ -44,11 +44,20 @@ def check_enum(data: pl.DataFrame, col: str, tol_uniq: float, tol_na: float) -> 
     return is_enum
 
 
+def cast_cat2int(data: pl.DataFrame, suffix="_int") -> pl.DataFrame:
+    """Convert categories to integer."""
+    cols = data.select(cs.by_dtype(pl.Enum)).columns
+    for col in cols:
+        new_col = col + suffix
+        data = data.with_columns(pl.col(col).to_physical().alias(new_col))
+    return data
+
+
 def main() -> None:
     table_nm: str = "sales"
     with get_conn() as conn:
         data = get_data(conn, table_nm=table_nm)
         data = cast_cat_rank(data)
-        # breakpoint()
+        data = cast_cat2int(data, suffix="_int")
         qry = f"CREATE OR REPLACE TABLE {table_nm} AS SELECT * FROM data;"
         conn.sql(qry)

@@ -7,7 +7,7 @@ from config import settings
 from fltk.conn import connect_acc as acc
 
 
-def main(db_choice: str) -> tuple[acc.ConnectAcc, Path]:
+def main(db_choice: str) -> acc.ConnectAcc:
     match db_choice:
         case "db":
             path = Path(settings.db.fakeco)
@@ -17,4 +17,4 @@ def main(db_choice: str) -> tuple[acc.ConnectAcc, Path]:
             msg: str = f"'{db_choice}' is an invalid db choice for accdb_conn."
             raise ValueError(msg)
     conn = acc.ConnectAcc(path=path)
-    return (conn, path)
+    return conn

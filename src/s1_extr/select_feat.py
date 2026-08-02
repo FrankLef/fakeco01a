@@ -1,4 +1,4 @@
-import pandas as pd
+import polars as pl
 from typing import Any
 from pathlib import Path
 from feature_engine.selection import (
@@ -9,7 +9,7 @@ from feature_engine.selection import (
 import json
 
 
-def get_dict(data: pd.DataFrame, specs: dict[str, float]) -> dict[str, Any]:
+def get_info_dict(data: pl.DataFrame, specs: dict[str, float]) -> dict[str, Any]:
     results = {}
     for name, tol in specs.items():
         if name == "const":
@@ -34,8 +34,8 @@ def get_dict(data: pd.DataFrame, specs: dict[str, float]) -> dict[str, Any]:
     return results
 
 
-def main(data: pd.DataFrame, specs: dict[str, float], path: Path | None):
-    results = get_dict(data, specs=specs)
+def main(data: pl.DataFrame, specs: dict[str, float], path: Path | None):
+    results = get_info_dict(data, specs=specs)
     if path:
         with open(path, "w", encoding="utf-8") as file:
             json.dump(results, file, default=list)

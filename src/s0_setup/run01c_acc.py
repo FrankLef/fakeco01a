@@ -9,11 +9,10 @@ duckdb_path = settings.paths.duckdb
 
 
 def main() -> None:
-    accdb = inst_acc(db_choice="db")
-    conn = accdb[0]
+    conn = inst_acc(db_choice="db")
     check = conn.test_connect()
     if check:
-        msg: str = f"MS Access connect is ok.\n{accdb[1]}"
+        msg: str = "✅ MS Access connect is ok."
         rprint(msg)
 
 

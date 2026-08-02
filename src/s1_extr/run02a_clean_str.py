@@ -14,24 +14,19 @@ def get_data(conn: DdbConn, table_nm: str) -> pl.DataFrame:
 
 
 def clean_str(data: pl.DataFrame) -> pl.DataFrame:
+    """Clean blank, empty string. Keep None, DO NOT replace None."""
     cols = data.select(cs.string()).columns
     if not len(cols):
         raise ValueError("No columns of type string.")
-    for col in cols:
-        # keep only 1 space between word.
-        data = data.with_columns(
-            pl.col(col).str.replace_all(r"\s+", " ").str.strip_chars().alias(col)
-        )
-        # set to null the string with only blank spaces
-        # data = data.with_columns(pl.col(col).str.replace_all(r"^\s*$", "").alias(col))
-        # NOTE: Use this to make sure you get None, replace_all() gives empty string, not None
-        data = data.with_columns(
-            pl.when(pl.col(col).str.contains(r"^\s*$"))
-            .then(None)
-            .otherwise(pl.col(col))
-            .alias(col)
-        )
-
+    data = data.with_columns(
+        pl.col(cols).str.replace_all(r"\s+", " ").str.strip_chars()
+    )
+    data = data.with_columns(
+        pl.when(pl.col(cols).str.contains(r"^\s*$"))
+        .then(None)
+        .otherwise(pl.col(cols))
+        .name.keep()
+    )
     return data
 
 
