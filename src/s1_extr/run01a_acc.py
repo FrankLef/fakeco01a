@@ -4,7 +4,7 @@
 from rich import print as rprint
 
 # from src._registry.ddb import get_conn
-from src._registry.feathr import save_feather
+from src._registry.feathr import feathr
 from src._registry.acc import main as inst_acc
 
 
@@ -17,7 +17,7 @@ def main() -> None:
         data = conn_acc.read(qry)
         msg: str = f"Saving '{new_nm}' to 'feather' {data.shape}."
         rprint(msg)
-        save_feather(data, name=new_nm)
+        feathr.save(data, name=new_nm)
         # with get_conn() as conn:
         #     msg: str = f"Uploading '{new_nm}' to 'duckdb'. {data.shape}."
         #     rprint(msg)
