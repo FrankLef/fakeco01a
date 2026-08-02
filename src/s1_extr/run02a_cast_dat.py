@@ -1,16 +1,13 @@
 """Cast to date dtype and handle NA values."""
 
-import duckdb as ddb
-from config import settings
 import pandas as pd
 
-
-duckdb_path = settings.paths.duckdb
+from src._registry.ddb import get_conn
 
 
 def main() -> None:
     table_nm: str = "sales"
-    with ddb.connect(duckdb_path) as conn:
+    with get_conn() as conn:
         qry = f"FROM {table_nm}"
         data = conn.sql(qry).df()
         # print("before:\n", data.dtypes)

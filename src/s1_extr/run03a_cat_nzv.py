@@ -1,19 +1,16 @@
 """Fit NZV columns for category."""
 
-import duckdb as ddb
-
 from config import settings
 import pandas as pd
 
+from src._registry.ddb import get_conn, DdbConn
 from .calc_nzv_str import calc_nzv_str
 
 
 duckdb_path = settings.paths.duckdb
 
 
-def get_data(
-    conn: ddb.DuckDBPyConnection, table_nm: str, dtypes: list[str]
-) -> pd.DataFrame:
+def get_data(conn: DdbConn, table_nm: str, dtypes: list[str]) -> pd.DataFrame:
     qry = f"FROM {table_nm}"
     data = conn.sql(qry).df()
     data = data.select_dtypes(include=dtypes)
@@ -29,7 +26,7 @@ def main() -> None:
     freq_ratio_tol: float = 95 / 5
     # NOTE: use 0.05 because large data set, small sets can use 0.10
     uniq_pct_tol: float = 0.05
-    with ddb.connect(duckdb_path) as conn:
+    with get_conn() as conn:
         data_str = get_data(conn, table_nm=table_nm, dtypes=["category"])
         stats_df = calc_nzv_str(
             data_str, freq_ratio_tol=freq_ratio_tol, uniq_pct_tol=uniq_pct_tol

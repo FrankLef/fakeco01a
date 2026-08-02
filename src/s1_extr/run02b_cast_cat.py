@@ -1,16 +1,12 @@
 """Create ranked data for string."""
 
-import duckdb as ddb
-
-from config import settings
 import pandas as pd
 from pandas.api.types import CategoricalDtype
 
+from src._registry.ddb import get_conn, DdbConn
 
-duckdb_path = settings.paths.duckdb
 
-
-def get_data(conn: ddb.DuckDBPyConnection, table_nm: str) -> pd.DataFrame:
+def get_data(conn: DdbConn, table_nm: str) -> pd.DataFrame:
     qry = f"FROM {table_nm}"
     data = conn.sql(qry).df()
     if data.empty:
@@ -31,7 +27,7 @@ def cast_cat_rank(data: pd.DataFrame, dtypes: list[str]) -> pd.DataFrame:
 
 def main() -> None:
     table_nm: str = "sales"
-    with ddb.connect(duckdb_path) as conn:
+    with get_conn() as conn:
         data = get_data(conn, table_nm=table_nm)
         data = cast_cat_rank(data, dtypes=["str"])
         qry = f"CREATE OR REPLACE TABLE {table_nm} AS SELECT * FROM data;"

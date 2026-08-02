@@ -1,20 +1,17 @@
 """Feature selection for number columns."""
 
-import duckdb as ddb
 from config import settings
 import pandas as pd
 from rich import print as rprint
 from rich.pretty import pprint as rpprint
 
+from src._registry.ddb import get_conn, DdbConn
 from .select_feat import main as feat_sel
 
-duckdb_path = settings.paths.duckdb
 data_path = settings.paths.data
 
 
-def get_data(
-    conn: ddb.DuckDBPyConnection, table_nm: str, dtypes=list[str]
-) -> pd.DataFrame:
+def get_data(conn: DdbConn, table_nm: str, dtypes=list[str]) -> pd.DataFrame:
     qry = f"FROM {table_nm}"
     data = conn.sql(qry).df()
     data = data.select_dtypes(include=dtypes)
@@ -26,7 +23,7 @@ def get_data(
 def main() -> None:
     table_nm: str = "sales"
     dtypes = ["number"]
-    with ddb.connect(duckdb_path) as conn:
+    with get_conn() as conn:
         data_num = get_data(conn, table_nm=table_nm, dtypes=dtypes)
     specs = {"const": 1, "quasi_const": 0.9, "dupl": 0, "corr": 0.9}
     path = data_path.joinpath("featsel_num.json")

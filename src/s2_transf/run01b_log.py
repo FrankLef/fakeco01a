@@ -1,13 +1,12 @@
-import duckdb as ddb
+"""Add log columns to sales table."""
+
 import pandas as pd
 from feature_engine.transformation import LogCpTransformer
 
-from config import settings
-
-duckdb_path = settings.paths.duckdb
+from src._registry.ddb import get_conn, DdbConn
 
 
-def add_data(conn: ddb.DuckDBPyConnection, table_nm: str, cols: dict[str, str]) -> None:
+def add_data(conn: DdbConn, table_nm: str, cols: dict[str, str]) -> None:
     for old_col, new_col in cols.items():
         qry = f"ALTER TABLE {table_nm} ADD COLUMN IF NOT EXISTS {new_col} FLOAT DEFAULT 0;"
         conn.sql(qry)
@@ -17,7 +16,7 @@ def add_data(conn: ddb.DuckDBPyConnection, table_nm: str, cols: dict[str, str]) 
         conn.sql(qry)
 
 
-def get_data(conn: ddb.DuckDBPyConnection, table_nm: str) -> pd.DataFrame:
+def get_data(conn: DdbConn, table_nm: str) -> pd.DataFrame:
     qry = f"FROM {table_nm};"
     data = conn.sql(qry).df()
     return data
@@ -28,7 +27,7 @@ def main() -> None:
     table_nm: str = "sales"
     cols: list[str] = ["sales_amt"]
     the_cols = {col: col + suffix for col in cols}
-    with ddb.connect(duckdb_path) as conn:
+    with get_conn() as conn:
         add_data(conn, table_nm=table_nm, cols=the_cols)
         data = get_data(conn, table_nm=table_nm)
         vars: list[str | int] = list(the_cols.values())

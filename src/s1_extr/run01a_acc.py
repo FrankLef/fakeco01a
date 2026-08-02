@@ -1,13 +1,10 @@
 """Extract data from MS Access and set primary key."""
 
-import duckdb as ddb
-from config import settings
 from typing import Final
-
 from rich import print as rprint
-from src._registry.acc import main as inst_acc
 
-duckdb_path = settings.paths.duckdb
+from src._registry.ddb import get_conn
+from src._registry.acc import main as inst_acc
 
 
 def main() -> None:
@@ -19,7 +16,7 @@ def main() -> None:
         qry = f"SELECT * FROM {raw_nm};"
         raw_data = conn.read(qry)
         new_data = raw_data.reset_index(names=PK)
-        with ddb.connect(duckdb_path) as conn:
+        with get_conn() as conn:
             msg: str = f"Uploading '{new_nm}' to 'duckdb'. {new_data.shape[0]} rows."
             rprint(msg)
             qry = f"CREATE OR REPLACE TABLE {new_nm} AS SELECT * FROM new_data;"
