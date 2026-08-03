@@ -10,6 +10,7 @@ import json
 
 
 def get_info_dict(data: pl.DataFrame, specs: dict[str, float]) -> dict[str, Any]:
+    data = data.to_pandas()
     results = {}
     for name, tol in specs.items():
         if name == "const":

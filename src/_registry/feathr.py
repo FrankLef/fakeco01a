@@ -1,6 +1,6 @@
 from config import settings
 
-from fltk.utils.feathr import Feathr
+from fltk.feathr.feathr import Feathr
 
 data_path = settings.paths.data
 
