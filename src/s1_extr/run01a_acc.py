@@ -1,7 +1,7 @@
 """Extract data from MS Access and set primary key."""
 
 # from typing import Final
-from rich import print as rprint
+# from rich import print as rprint
 
 # from src._registry.ddb import get_conn
 from src._registry.feathr import feathr
@@ -15,8 +15,8 @@ def main() -> None:
     for raw_nm, new_nm in table_nms.items():
         qry = f"SELECT * FROM {raw_nm};"
         data = conn_acc.read(qry)
-        msg: str = f"Saving '{new_nm}' to 'feather' {data.shape}."
-        rprint(msg)
+        # msg: str = f"Saving '{new_nm}' to 'feather' {data.shape}."
+        # rprint(msg)
         feathr.save(data, name=new_nm)
         # with get_conn() as conn:
         #     msg: str = f"Uploading '{new_nm}' to 'duckdb'. {data.shape}."

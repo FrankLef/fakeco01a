@@ -3,16 +3,16 @@
 import polars as pl
 import polars.selectors as cs
 
+from src._registry.feathr import feathr
+# from src._registry.ddb import get_conn, DdbConn
 
-from src._registry.ddb import get_conn, DdbConn
 
-
-def get_data(conn: DdbConn, table_nm: str) -> pl.DataFrame:
-    qry = f"FROM {table_nm}"
-    data = conn.sql(qry).pl()
-    if data.is_empty():
-        raise AssertionError(f"Empty data for {table_nm}.")
-    return data
+# def get_data(conn: DdbConn, table_nm: str) -> pl.DataFrame:
+#     qry = f"FROM {table_nm}"
+#     data = conn.sql(qry).pl()
+#     if data.is_empty():
+#         raise AssertionError(f"Empty data for {table_nm}.")
+#     return data
 
 
 def cast_cat_rank(
@@ -53,11 +53,14 @@ def cast_cat2int(data: pl.DataFrame, suffix="_int") -> pl.DataFrame:
     return data
 
 
-def main() -> None:
-    table_nm: str = "sales"
-    with get_conn() as conn:
-        data = get_data(conn, table_nm=table_nm)
-        data = cast_cat_rank(data)
-        data = cast_cat2int(data, suffix="_int")
-        qry = f"CREATE OR REPLACE TABLE {table_nm} AS SELECT * FROM data;"
-        conn.sql(qry)
+def main(table_nm: str = "sales") -> None:
+    data = feathr.load(table_nm)
+    feathr.save(data, name=table_nm)
+    data = cast_cat_rank(data)
+    data = cast_cat2int(data, suffix="_int")
+    # with get_conn() as conn:
+    #     data = get_data(conn, table_nm=table_nm)
+    #     data = cast_cat_rank(data)
+    #     data = cast_cat2int(data, suffix="_int")
+    #     qry = f"CREATE OR REPLACE TABLE {table_nm} AS SELECT * FROM data;"
+    #     conn.sql(qry)
