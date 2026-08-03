@@ -1,6 +1,6 @@
 """Validate Duckdb connection."""
 
-from src._registry.ddb import get_conn
+from src._registry.main import get_conn
 
 
 def main():

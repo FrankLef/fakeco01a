@@ -1,6 +1,6 @@
 """Test the existence of data dictionaries."""
 
-from src._registry.specs import specs_mstr
+from src._registry.main import specs_mstr
 
 
 def main() -> None:

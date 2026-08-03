@@ -2,7 +2,7 @@
 
 import polars as pl
 
-from src._registry.feathr import feathr
+from src._registry.main import feathr
 # from src._registry.ddb import get_conn
 
 

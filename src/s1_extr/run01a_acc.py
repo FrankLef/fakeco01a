@@ -3,9 +3,7 @@
 # from typing import Final
 # from rich import print as rprint
 
-# from src._registry.ddb import get_conn
-from src._registry.feathr import feathr
-from src._registry.acc import main as inst_acc
+from src._registry.main import feathr, inst_acc
 
 
 def main() -> None:

@@ -3,7 +3,7 @@
 from config import settings
 
 from rich import print as rprint
-from src._registry.acc import main as inst_acc
+from src._registry.main import inst_acc
 
 duckdb_path = settings.paths.duckdb
 

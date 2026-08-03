@@ -1,7 +1,7 @@
 import polars as pl
 import polars.selectors as cs
 
-from src._registry.feathr import feathr
+from src._registry.main import feathr
 # from src._registry.ddb import get_conn, DdbConn
 
 
