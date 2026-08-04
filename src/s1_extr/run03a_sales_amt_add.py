@@ -4,9 +4,9 @@ import polars as pl
 from src._registry.main import feathr
 
 
-def main(table_nm: str = "sales_enc") -> None:
+def main() -> None:
     col: str = "sales_amt"
-    tbls = ("sales", "sales_enc")
+    tbls = ("sales",)
     for tbl in tbls:
         data = feathr.load(tbl)
         data = data.with_columns(

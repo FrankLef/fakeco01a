@@ -10,7 +10,7 @@ from src._registry.main import feathr
 def main() -> None:
     suffix = "_lg"
     cols = ("sales_amt", "sales_qty")
-    tbls: tuple[str, ...] = ("sales", "sales_enc")
+    tbls: tuple[str, ...] = ("sales",)
     for tbl in tbls:
         data = feathr.load(tbl)
         for col in cols:

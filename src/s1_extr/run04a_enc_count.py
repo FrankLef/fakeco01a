@@ -6,9 +6,8 @@ from src._registry.main import feathr
 
 
 def encode_freq(data: pl.DataFrame) -> pl.DataFrame:
-    # use specific type hint to avoid error message
-    cols: list[str | int] = list(data.select(cs.by_dtype(pl.Categorical)).columns)
     pd_df = data.to_pandas()
+    cols: list[str | int] = list(data.select(cs.by_dtype(pl.Categorical)).columns)
     cf = CountFrequencyEncoder(
         encoding_method="count", variables=cols, missing_values="ignore"
     )
@@ -19,7 +18,7 @@ def encode_freq(data: pl.DataFrame) -> pl.DataFrame:
 
 def main() -> None:
     src = "sales"
-    dst = "sales_enc"
+    dst = "sales_encc"
     data = feathr.load(src)
     enc_data = encode_freq(data)
     # print(enc_data.glimpse(max_items_per_column=3))
