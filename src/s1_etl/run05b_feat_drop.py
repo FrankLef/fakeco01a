@@ -6,7 +6,8 @@ from rich import print as rprint
 from src._registry.main import feathr
 
 
-def xprt_to_json(data, path):
+def xprt_to_json(data: dict[str, list[str]], fn: str) -> None:
+    path = feathr.path.joinpath(fn)
     with open(path, "w", encoding="utf-8") as file:
         json.dump(data, file, default=list)
 
@@ -45,9 +46,7 @@ def main() -> None:
             "id",
         ],
     }
-    fn = "featdrop.json"
-    json_path = feathr.path.joinpath(fn)
-    xprt_to_json(drop_cols, path=json_path)
+    xprt_to_json(drop_cols, fn="featdrop.json")
     tbls = ("sales", "sales_encc", "sales_enct")
     for tbl in tbls:
         data = feathr.load(tbl)
