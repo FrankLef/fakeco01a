@@ -11,36 +11,36 @@
         },
         {
             "priority": 1,
-            "name": "extr",
-            "dir": "s1_extr",
+            "name": "etl",
+            "dir": "s1_etl",
             "emo": "mushroom",
             "song": "C"
         },
         {
             "priority": 2,
-            "name": "transf",
-            "dir": "s2_transf",
+            "name": "pproc",
+            "dir": "s2_pproc",
             "emo": "sunflower",
             "song": "D"
         },
         {
             "priority": 3,
-            "name": "load",
-            "dir": "s3_load",
+            "name": "rollup",
+            "dir": "s3_rollup",
             "emo": "leaves",
             "song": "E"
         },
         {
             "priority": 4,
-            "name": "raw",
-            "dir": "s4_raw",
+            "name": "survey",
+            "dir": "s4_survey",
             "emo": "rainbow",
             "song": "F"
         },
         {
             "priority": 5,
-            "name": "pproc",
-            "dir": "s5_pproc",
+            "name": "outl",
+            "dir": "s5_outl",
             "emo": "tulip",
             "song": "G"
         },
