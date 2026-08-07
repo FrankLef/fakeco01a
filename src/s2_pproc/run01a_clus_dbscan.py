@@ -1,4 +1,5 @@
 import polars as pl
+import numpy.typing as npt
 from rich.console import Console
 from rich.pretty import pprint as rpprint
 from sklearn.cluster import DBSCAN
@@ -12,21 +13,33 @@ from .clus_summ import clus_summ
 _sales = specs_mstr.specs("schema").group("sales")
 
 
-def main() -> None:
-    data = feathr.load("sales")
-    data_enc = feathr.load("sales_enct")
+def get_data_clus(feathr_nm: str) -> pl.DataFrame:
+    data_enc = feathr.load(feathr_nm)
     cols = _sales.lines().filter_rule("clus").line_nms
     data_clus = data_enc.select(cols)
-    cluster_var = "clus_dbscan"
+    return data_clus
+
+
+def add_array_to_data(feathr_nm: str, arr: npt.NDArray, new_var: str) -> pl.DataFrame:
+    new_df = pl.from_numpy(arr, schema=[new_var])
+    data = feathr.load(feathr_nm)
+    data = data.drop(new_var, strict=False)
+    data = pl.concat([data, new_df], how="horizontal")
+    return data
+
+
+def main(
+    enc_data_nm: str = "sales_enct",
+    data_nm: str = "sales",
+    cluster_var="clus_dbscan",
+    target_nm: str = "sales_amt",
+) -> None:
+    data_clus = get_data_clus(enc_data_nm)
     console = Console()
     with console.status("DBSCAN clustering, 1 min ...", spinner="dots"):
         clustering = DBSCAN(eps=0.15, min_samples=50).fit(data_clus)
-
-    clus_df = pl.from_numpy(clustering.labels_, schema=[cluster_var])
-    data = data.drop(cluster_var, strict=False)
-    data = pl.concat([data, clus_df], how="horizontal")
-    # summ = get_clus_summ(data, clus_col=clus_col)
-    summ = clus_summ(data, clus_var=cluster_var, nrow_var="nrows", amt_var="sales_amt")
+    # breakpoint()
+    data = add_array_to_data(data_nm, arr=clustering.labels_, new_var=cluster_var)
+    summ = clus_summ(data, clus_var=cluster_var, nrow_var="nrows", amt_var=target_nm)
     rpprint(summ)
-    feathr.save(data, name="sales")
-    feathr.save(data_enc, name="sales_enct")
+    feathr.save(data, name=data_nm)
