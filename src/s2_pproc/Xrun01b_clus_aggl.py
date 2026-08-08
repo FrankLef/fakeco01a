@@ -8,7 +8,7 @@ from sklearn.cluster import AgglomerativeClustering
 from src._registry.main import feathr
 from src._registry.specs import specs_mstr
 
-from .clus_summ import clus_summ
+from .summ import Summ
 
 _sales = specs_mstr.specs("schema").group("sales")
 
@@ -41,7 +41,9 @@ def main(
         clustering = AgglomerativeClustering(n_clusters=5).fit(data_clus)
     data = add_array_to_data(data_nm, arr=clustering.labels_, new_var=cluster_var)
 
-    summ = clus_summ(data, clus_var=cluster_var, nrow_var="nrows", amt_var=target_nm)
+    summ = Summ(name=cluster_var)
+    summ.run_ssb(data, group_var=cluster_var, amt_var=target_nm)
+    # summ = summ_sse(data, group_var=cluster_var, amt_var=target_nm, type="regression")
     # breakpoint()
-    rpprint(summ)
+    rpprint(summ.ssb)
     feathr.save(data, name=data_nm)

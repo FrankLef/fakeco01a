@@ -33,6 +33,6 @@ def main() -> None:
     )
     # breakpoint()
     enc_data = pl.concat([enc_data, append_df], how="horizontal")
-    # print(enc_data.glimpse(max_items_per_column=3))
+    print(enc_data.glimpse(max_items_per_column=3))
     # breakpoint()
     feathr.save(enc_data, name=dst)

@@ -1,14 +1,11 @@
 import polars as pl
 import numpy.typing as npt
 from rich.console import Console
-from rich.pretty import pprint as rpprint
 from sklearn.cluster import DBSCAN
 
 
 from src._registry.main import feathr
 from src._registry.specs import specs_mstr
-
-from .clus_summ import clus_summ
 
 _sales = specs_mstr.specs("schema").group("sales")
 
@@ -40,6 +37,4 @@ def main(
         clustering = DBSCAN(eps=0.15, min_samples=50).fit(data_clus)
     # breakpoint()
     data = add_array_to_data(data_nm, arr=clustering.labels_, new_var=cluster_var)
-    summ = clus_summ(data, clus_var=cluster_var, nrow_var="nrows", amt_var=target_nm)
-    rpprint(summ)
     feathr.save(data, name=data_nm)
