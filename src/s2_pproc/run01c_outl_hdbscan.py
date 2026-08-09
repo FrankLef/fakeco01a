@@ -1,5 +1,6 @@
 import pandas as pd
 import polars as pl
+import numpy.typing as npt
 from datetime import datetime as dt
 from rich.console import Console
 from rich import print as rprint
@@ -37,7 +38,7 @@ def get_data_X(data: pl.DataFrame, cats: list[str], nums: list[str]) -> pd.DataF
     return data_X
 
 
-def get_preproc(cats: list[str], nums: list[str]):
+def get_preproc(cats: list[str], nums: list[str]) -> ColumnTransformer:
     """Create a preprocessor to handle both data types simultaneously.
 
     Do not use target encoding with HDBSCAN. The distance is distorted categories have similar target mean.
@@ -56,7 +57,7 @@ def get_preproc(cats: list[str], nums: list[str]):
     return preprocessor
 
 
-def get_pipe(preproc):
+def get_pipe(preproc: ColumnTransformer) -> Pipeline:
     """Combine preprocessing and anomaly detection into one pipeline."""
     outlier_pipeline = Pipeline(
         [
@@ -70,37 +71,57 @@ def get_pipe(preproc):
     return outlier_pipeline
 
 
-def get_data_pl(table_nm: str, data_X: pd.DataFrame) -> pl.DataFrame:
+def run_pipe(
+    pipeline: Pipeline, data_X: pd.DataFrame, data_y: npt.NDArray, outl_var: str
+) -> pd.DataFrame:
+    rprint(f"Start time: {dt.now().strftime('%H:%M:%S')}")
+    console = Console()
+    msg: str = "DBSCAN pipeline, 1 min ..."
+    with console.status(msg, spinner="dots"):
+        # No target 'y' needed with OneHotEncoder and HDBSCAN.add()
+        # y is provided for consistency with functions
+        pipeline.fit(X=data_X, y=data_y)
+    rprint(f"Finish time: {dt.now().strftime('%H:%M:%S')}")
+    cluster_labels = pipeline.named_steps["detector"].labels_
+    data_X[outl_var] = cluster_labels
+    return data_X
+
+
+def get_data_pl(
+    table_nm: str,
+    data_X: pd.DataFrame,
+    outl_var: str,
+    score_var: str | None = None,
+) -> pl.DataFrame:
     """Create final polars dataframe."""
     data = feathr.load(table_nm)
-    new_cols = {"is_outl": "hdbscan"}
-    data = data.drop(list(new_cols.values()), strict=False)
-    data = data.drop(list(new_cols.keys()), strict=False)
     data_pl = pl.from_pandas(data_X)
-    data_sel = data_pl.select(list(new_cols.keys()))
+    if score_var:
+        new_cols = [outl_var, score_var]
+    else:
+        new_cols = [outl_var]
+    data_sel = data_pl.select(new_cols)
     data = pl.concat([data, data_sel], how="horizontal")
-    data = data.rename(new_cols)
     return data
 
 
-def main(table_nm: str = "sales_outl", target_var: str = "sales_amt") -> None:
+def main(
+    table_nm: str = "sales_outl",
+    target_var: str = "sales_amt",
+    outl_var: str = "hdbscan",
+    score_var: str | None = None,
+) -> None:
     data = feathr.load(table_nm)
     feats = get_features()
     data_X = get_data_X(data, cats=feats["cats"], nums=feats["nums"])
-    # data_y = data[target_var].to_numpy()
+    data_y = data[target_var].to_numpy()
     preproc = get_preproc(cats=feats["cats"], nums=feats["nums"])
     pipeline = get_pipe(preproc)
-    rprint(f"Start time: {dt.now().strftime('%H:%M:%S')}")
-    console = Console()
-    with console.status("DBSCAN pipeline, 1 min ...", spinner="dots"):
-        # No target 'y' needed with OneHotEncoder and HDBSCAN
-        pipeline.fit(X=data_X)
-    rprint(f"Finish time: {dt.now().strftime('%H:%M:%S')}")
-    cluster_labels = pipeline.named_steps["detector"].labels_
-    data_X["is_outl"] = cluster_labels
-
-    # NOTE: outlier_scores_ not available when using HDBSCAM from sklearn
-    # outlier_scores = pipeline.named_steps["detector"].outlier_scores_
-    # data_pd["outl_score"] = outlier_scores
-    data = get_data_pl(table_nm=table_nm, data_X=data_X)
+    data_X = run_pipe(pipeline, data_X=data_X, data_y=data_y, outl_var=outl_var)
+    data = get_data_pl(
+        table_nm=table_nm,
+        data_X=data_X,
+        outl_var=outl_var,
+        score_var=score_var,
+    )
     feathr.save(data, name=table_nm)

@@ -1,5 +1,6 @@
 import pandas as pd
 import polars as pl
+import numpy.typing as npt
 from datetime import datetime as dt
 from rich.console import Console
 from rich import print as rprint
@@ -33,7 +34,7 @@ def get_data_X(data: pl.DataFrame, cats: list[str], nums: list[str]) -> pd.DataF
     return data_X
 
 
-def get_preproc(cats: list[str], nums: list[str]):
+def get_preproc(cats: list[str], nums: list[str]) -> ColumnTransformer:
     """Create a preprocessor to handle both data types simultaneously."""
     preprocessor = ColumnTransformer(
         transformers=[
@@ -48,7 +49,7 @@ def get_preproc(cats: list[str], nums: list[str]):
     return preprocessor
 
 
-def get_pipe(preproc):
+def get_pipe(preproc: ColumnTransformer) -> Pipeline:
     """Combine preprocessing and anomaly detection into one pipeline."""
     outlier_pipeline = Pipeline(
         [
@@ -62,37 +63,63 @@ def get_pipe(preproc):
     return outlier_pipeline
 
 
-def get_data_pl(table_nm: str, data_X: pd.DataFrame) -> pl.DataFrame:
+def run_pipe(
+    pipeline: Pipeline,
+    data_X: pd.DataFrame,
+    data_y: npt.NDArray,
+    outl_var: str,
+    score_var: str | None,
+) -> pd.DataFrame:
+    rprint(f"Start time: {dt.now().strftime('%H:%M:%S')}")
+    console = Console()
+    msg: str = "Isolation forest pipeline, 1 min ..."
+    with console.status(msg, spinner="dots"):
+        pipeline.fit(X=data_X, y=data_y)
+    rprint(f"Finish time: {dt.now().strftime('%H:%M:%S')}")
+
+    # Get predictions (1 = Normal transaction, -1 = Outlier)
+    data_X[outl_var] = pipeline.predict(data_X)
+
+    # Get anomaly scores (Lower/more negative scores mean highly anomalous)
+    data_X[score_var] = pipeline.decision_function(data_X.drop(columns=[outl_var]))
+    return data_X
+
+
+def get_data_pl(
+    table_nm: str,
+    data_X: pd.DataFrame,
+    outl_var: str,
+    score_var: str | None,
+) -> pl.DataFrame:
     """Create final polars dataframe."""
     data = feathr.load(table_nm)
-    new_cols = {"is_outl": "is_outl_isol", "outl_score": "outl_score_isol"}
-    data = data.drop(list(new_cols.values()), strict=False)
-    data = data.drop(list(new_cols.keys()), strict=False)
     data_pl = pl.from_pandas(data_X)
-    data_sel = data_pl.select(list(new_cols.keys()))
+    if score_var:
+        new_cols = [outl_var, score_var]
+    else:
+        new_cols = [outl_var]
+    data_sel = data_pl.select(new_cols)
     data = pl.concat([data, data_sel], how="horizontal")
-    data = data.rename(new_cols)
     return data
 
 
-def main(table_nm: str = "sales_outl", target_var: str = "sales_amt") -> None:
+def main(
+    table_nm: str = "sales_outl",
+    target_var: str = "sales_amt",
+    outl_var: str = "isol",
+    score_var: str | None = "isol_score",
+) -> None:
     data = feathr.load(table_nm)
     feats = get_features()
     data_X = get_data_X(data, cats=feats["cats"], nums=feats["nums"])
     data_y = data[target_var].to_numpy()
     preproc = get_preproc(cats=feats["cats"], nums=feats["nums"])
     pipeline = get_pipe(preproc)
-
-    rprint(f"Start time: {dt.now().strftime('%H:%M:%S')}")
-    console = Console()
-    with console.status("Isolation forest pipeline, 1 min ...", spinner="dots"):
-        pipeline.fit(X=data_X, y=data_y)
-    rprint(f"Finish time: {dt.now().strftime('%H:%M:%S')}")
-
-    # Get predictions (1 = Normal transaction, -1 = Outlier)
-    data_X["is_outl"] = pipeline.predict(data_X)
-
-    # Get anomaly scores (Lower/more negative scores mean highly anomalous)
-    data_X["outl_score"] = pipeline.decision_function(data_X.drop(columns=["is_outl"]))
-    data = get_data_pl(table_nm=table_nm, data_X=data_X)
+    data_X = run_pipe(pipeline, data_X, data_y, outl_var=outl_var, score_var=score_var)
+    data = get_data_pl(
+        table_nm=table_nm,
+        data_X=data_X,
+        outl_var=outl_var,
+        score_var=score_var,
+    )
     feathr.save(data, name=table_nm)
