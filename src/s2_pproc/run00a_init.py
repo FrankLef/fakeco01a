@@ -24,10 +24,11 @@ def set_others(
     return data
 
 
-def main(table_nm: str = "sales") -> None:
+def main(
+    table_nm: str = "sales", target_var="sales_amt", dst: str = "sales_outl"
+) -> None:
     data = feathr.load(table_nm)
-    summ = Summ("look")
-    target_var = "sales_amt"
+    summ = Summ("outliers")
     target_cols = list(_sales.lines().filter_role("target").line_nms)
     num_cols = list(_sales.lines().filter_role("num").line_nms)
     cat_cols = list(_sales.lines().filter_role("cat").line_nms)
@@ -43,4 +44,4 @@ def main(table_nm: str = "sales") -> None:
         rprint(msg)
         rpprint(summ.cats)
     data_ml = set_others(data_ml, main_cats=summ.main_cats)
-    feathr.save(data_ml, name="sales_ml")
+    feathr.save(data_ml, name=dst)

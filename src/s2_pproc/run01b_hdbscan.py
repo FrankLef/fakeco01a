@@ -84,7 +84,7 @@ def get_data_pl(table_nm: str, data_X: pd.DataFrame) -> pl.DataFrame:
     return data
 
 
-def main(table_nm: str = "sales_ml", target_var: str = "sales_amt_lg") -> None:
+def main(table_nm: str = "sales_outl", target_var: str = "sales_amt") -> None:
     data = feathr.load(table_nm)
     feats = get_features()
     data_X = get_data_X(data, cats=feats["cats"], nums=feats["nums"])
