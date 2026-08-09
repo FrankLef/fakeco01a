@@ -1,8 +1,9 @@
 import pandas as pd
 import polars as pl
+from datetime import datetime as dt
+from rich.console import Console
+from rich import print as rprint
 from sklearn.compose import ColumnTransformer
-
-# from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 from sklearn.preprocessing import StandardScaler
 from feature_engine.encoding import MeanEncoder
 
@@ -92,7 +93,12 @@ def main(table_nm: str = "sales_outl", target_var: str = "sales_amt") -> None:
     data_y = data[target_var].to_numpy()
     preproc = get_preproc(cats=feats["cats"], nums=feats["nums"])
     pipeline = get_pipe(preproc)
-    pipeline.fit(X=data_X, y=data_y)
+
+    rprint(f"Start time: {dt.now().strftime('%H:%M:%S')}")
+    console = Console()
+    with console.status("Isolation forest pipeline, 1 min ...", spinner="dots"):
+        pipeline.fit(X=data_X, y=data_y)
+    rprint(f"Finish time: {dt.now().strftime('%H:%M:%S')}")
 
     # Get predictions (1 = Normal transaction, -1 = Outlier)
     data_X["is_outl"] = pipeline.predict(data_X)
