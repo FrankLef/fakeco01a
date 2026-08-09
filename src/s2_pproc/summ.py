@@ -38,14 +38,14 @@ class Summ:
         )
         summ = summ.sort(group_var)
 
-        totals = (
+        TARGET_AMTs = (
             summ.select([NROWS, sum_var, SSE, SSB, SST])
             .sum()
             .with_columns(pl.lit(None).alias(group_var))
         )
         # move group var to first column
-        totals = totals.select([group_var, pl.all().exclude(group_var)])
-        summ = pl.concat([summ, totals], how="vertical")
+        TARGET_AMTs = TARGET_AMTs.select([group_var, pl.all().exclude(group_var)])
+        summ = pl.concat([summ, TARGET_AMTs], how="vertical")
         self.ssb = summ
 
     def run_ssr(
@@ -76,14 +76,14 @@ class Summ:
         )
         summ = summ.sort(group_var)
 
-        totals = (
+        TARGET_AMTs = (
             summ.select([NROWS, sum_var, SSE, SSR, SST])
             .sum()
             .with_columns(pl.lit(None).alias(group_var))
         )
         # move group var to first column
-        totals = totals.select([group_var, pl.all().exclude(group_var)])
-        summ = pl.concat([summ, totals], how="vertical")
+        TARGET_AMTs = TARGET_AMTs.select([group_var, pl.all().exclude(group_var)])
+        summ = pl.concat([summ, TARGET_AMTs], how="vertical")
         self.ssr = summ
 
     def run_cats(
@@ -99,7 +99,7 @@ class Summ:
         metrics = []
         for col in cat_cols:
             a_col = df[col]
-            cats_paret = self.cats_pareto(
+            enc_info = self.enc_info(
                 df, cat_var=col, target_var=target_var, threshold=threshold
             )
             metrics.append(
@@ -107,52 +107,70 @@ class Summ:
                     "variable": col,
                     "null_nb": a_col.null_count(),
                     "uniq_nb": a_col.n_unique(),
-                    "ncats": cats_paret["nuniq"],
-                    "ncats_pct": round(100 * cats_paret["nuniq"] / a_col.n_unique(), 1),
-                    "nrows_pct": cats_paret["nrows_pct"],
-                    "total_pct": cats_paret["total_pct"],
+                    "ncats": enc_info["ncats"],
+                    "ncats_pct": round(100 * enc_info["ncats"] / a_col.n_unique(), 1),
+                    "nrows": enc_info["nrows"],
+                    "nrows_pct": enc_info["nrows_pct"],
+                    "target_mean": enc_info["target_mean"],
+                    "target_pct": enc_info["target_pct"],
                 }
             )
-            main_cats[col] = cats_paret["main_cats"]
+            main_cats[col] = enc_info["main_cats"]
         metrics_df = pl.DataFrame(metrics)
         self.main_cats = main_cats
         self.cats = metrics_df
 
-    def cats_pareto(
+    def enc_info(
         self, data: pl.DataFrame, cat_var: str, target_var: str, threshold: float
     ) -> dict[str, Any]:
+        """Summary information used to help choose encoding.
+
+        Very useful to help select CountFrequencyEncoder vs MeanEncoder.
+        """
+        NCATS: Final[str] = "ncats"
         NROWS: Final[str] = "nrows"
-        TOTAL: Final[str] = "total"
-        CUM_PCT: Final[str] = "cum_pct"
+        NROWS_PCT: Final[str] = "nrows_pct"
+        TARGET_AMT: Final[str] = "target_amt"
+        TARGET_MEAN: Final[str] = "target_mean"
+        TARGET_PCT: Final[str] = "target_pct"
         raw_data = data.select([cat_var, target_var]).drop_nulls()
-        df = (
-            # data.select([cat_var, target_var])
+        grouped_df = (
             raw_data.group_by(cat_var)
             .agg(
                 pl.col(cat_var).len().alias(NROWS),
-                pl.col(target_var).sum().alias(TOTAL),
+                pl.col(target_var).sum().alias(TARGET_AMT),
+                pl.col(target_var).mean().alias(TARGET_MEAN),
             )
-            .sort(TOTAL, descending=True)
+            .sort(TARGET_AMT, descending=True)
             .with_columns(
                 [
-                    # Calculate running total percentiles
-                    (pl.col(TOTAL).cum_sum() / pl.col(TOTAL).sum()).alias(CUM_PCT)
+                    # Calculate running NROWS percentiles
+                    (pl.col(NROWS).cum_sum() / pl.col(NROWS).sum()).alias(NROWS_PCT),
+                    # Calculate running TARGET_AMT percentiles
+                    (pl.col(TARGET_AMT).cum_sum() / pl.col(TARGET_AMT).sum()).alias(
+                        TARGET_PCT
+                    ),
                 ]
             )
-            .filter(pl.col(CUM_PCT).le(threshold))
+            .filter(pl.col(TARGET_PCT).le(threshold))
         )
 
-        main_cats = df.get_column(cat_var).unique().to_list()
-
-        nuniq = df.get_column(cat_var).n_unique()
-        nrows_pct = round(100 * df[NROWS].sum() / raw_data.height, 1)
-        total_pct = round(
-            100 * float(df[TOTAL].sum()) / float(raw_data[target_var].sum()), 1
+        nrows = grouped_df[NROWS].sum()
+        nrows_pct = round(100 * nrows / raw_data.height, 1)
+        target_sum = float(grouped_df[TARGET_AMT].sum())
+        target_pct = round(
+            100 * target_sum / float(raw_data[target_var].sum()),
+            1,
         )
+        target_mean = round(target_sum / float(grouped_df[NROWS].sum()), 2)
+        main_cats = grouped_df.get_column(cat_var).to_list()
+
         out = {
-            "nuniq": nuniq,
-            "nrows_pct": nrows_pct,
-            "total_pct": total_pct,
+            NCATS: grouped_df.height,
+            NROWS: nrows,
+            TARGET_MEAN: target_mean,
+            NROWS_PCT: nrows_pct,
+            TARGET_PCT: target_pct,
             "main_cats": main_cats,
         }
         return out

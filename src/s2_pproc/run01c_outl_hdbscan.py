@@ -4,7 +4,6 @@ from datetime import datetime as dt
 from rich.console import Console
 from rich import print as rprint
 from sklearn.compose import ColumnTransformer
-
 from sklearn.preprocessing import StandardScaler
 from feature_engine.encoding import CountFrequencyEncoder
 

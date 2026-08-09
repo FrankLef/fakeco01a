@@ -45,17 +45,6 @@ def get_preproc(cats: list[str], nums: list[str]):
             ),
         ]
     )
-
-    # preprocessor = ColumnTransformer(
-    #     transformers=[
-    #         ("num", StandardScaler(), nums),
-    #         (
-    #             "cat",
-    #             OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1),
-    #             cats,
-    #         ),
-    #     ]
-    # )
     return preprocessor
 
 

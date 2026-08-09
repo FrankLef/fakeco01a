@@ -33,15 +33,15 @@ def main(
     num_cols = list(_sales.lines().filter_role("num").line_nms)
     cat_cols = list(_sales.lines().filter_role("cat").line_nms)
     ml_cols = cat_cols + num_cols + target_cols
-    data_ml = data.select(ml_cols)
+    data_outl = data.select(ml_cols)
     threshold: float = 0.90
     summ.run_cats(
-        data_ml, cat_cols=cat_cols, target_var=target_var, threshold=threshold
+        data_outl, cat_cols=cat_cols, target_var=target_var, threshold=threshold
     )
     # Print all rows
-    with pl.Config(tbl_rows=-1):
-        msg: str = f"Summary with {threshold=} and {data_ml.shape=}"
+    with pl.Config(tbl_rows=-1, tbl_cols=-1):
+        msg: str = f"Summary with {threshold=} and {data_outl.shape=}"
         rprint(msg)
         rpprint(summ.cats)
-    data_ml = set_others(data_ml, main_cats=summ.main_cats)
+    data_ml = set_others(data_outl, main_cats=summ.main_cats)
     feathr.save(data_ml, name=dst)
