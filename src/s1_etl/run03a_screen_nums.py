@@ -5,9 +5,10 @@ from src._registry.main import feathr
 
 def main(table_nm: str = "sales") -> None:
     data = feathr.load(table_nm)
-    screenr = NumsScreener(data)
+    screenr = NumsScreener(table_nm, data=data)
+    screenr.title = f"Screen numerical columns: '{table_nm}'".title()
     screenr.execute()
     screenr.print()
-    print(f"{screenr.nzv_tol=}")
+    # print(f"{screenr.nzv_tol=}")
     print(screenr)
-    # breakpoint()
+    screenr.tabl.show()
