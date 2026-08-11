@@ -33,35 +33,7 @@ repository = "https://github.com/FrankLef/fakeco01a.git"
 Changelog = "https://github.com/FrankLef/pjRL.git/releases"
 
 [tool.poetry.dependencies]
-# python changed to allow install of scipy
-# python = "^3.12"
-# pandas = "^3.0.0"
-# pandera = "^0.22.1"
-# numpy = "^1.23.3"
-# pyodbc = "^4.0.34"
-# SQLAlchemy = "^2.0.0"
-# sqlalchemy-utils = "^0.41.2"
-# used by sqlalchemy to connect to MS Access
-# sqlalchemy-access = "^2.0.2"
-# used by sqlalchemy to connect to postgre
-# psycopg2 = "^2.9.9"
-# Use pyarrow.feather instead of feather-format,
-# feather.format exists only fo backward compatibility.
-# pyarrow is better installed with `pip3 install pyarrow` in the local python,
-# don't install pyarrow with poetry add, plenty of error messages ensue.
-# dynaconf = "^3.1.11"
-# rich = "^12.5.1"
-# typer = "^0.22.0"
-# tomli = "^2.0.1"
-# matplotlib = "^3.7.0"
-# scipy = "^1.10.1"
-# seaborn = "^0.12.2"
-# openpyxl = "^3.1.5"
-# pyyaml = "^6.0.2"
-# black = "^24.10.0"
-# frictionless = "^5.18.0"
-# great-tables = "^0.16.1"
-# plotly = "^5.24.1"
+
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3.1"
@@ -85,10 +57,11 @@ pythonpath = ["src"]
 testpaths = ["tests", "integration"]
 
 [tool.ruff]
+# force-exclude tells Ruff to ignore this file even if the VS Code editor explicitly passes it. Personal note: Not sure this work! What works is the '"ruff.exclude"' line in the user settings.json.
+force-exclude = true
 # source https://blog.jerrycodes.com/ruff-the-python-linter/
 # use this option if you want 'strict' style which is a bit too much
 # select = ["ALL"]
-# nativeServer = "auto"
 extend-include = ["*.ipynb"]
 
 
