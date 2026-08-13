@@ -5,13 +5,12 @@ from rich import print as rprint
 from src._registry.main import feathr
 from src._registry.specs import specs_mstr
 
-
 _sales = specs_mstr.specs("schema").group("sales")
 
 
 def main() -> None:
     drop_cols = _sales.lines().filter_rule("featdrop").line_nms
-    tbls = ("sales", "sales_encc", "sales_enct")
+    tbls = ("sales",)
     for tbl in tbls:
         data = feathr.load(tbl)
         ncols_before = data.width
