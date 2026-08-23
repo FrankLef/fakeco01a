@@ -3,10 +3,18 @@ import numpy as np
 import numpy.typing as npt
 from typing import Any
 from pyod.models.mcd import MCD
+from feature_engine.imputation import MeanMedianImputer
 import plotly.express as px
 import plotly.graph_objects as go
 
 from src._registry.main import feathr
+
+
+def impute_missing(arr: npt.NDArray[Any]) -> npt.NDArray[Any]:
+    mmi = MeanMedianImputer(imputation_method="median")
+    mmi.fit(arr)
+    transf_arr = mmi.transform(arr)
+    return transf_arr
 
 
 def maha_dist_plot(
@@ -16,9 +24,9 @@ def maha_dist_plot(
     alpha: float,
     target_cutoff: float,
 ) -> go.Figure:
-    title = f"Sorted Mahalanobis Distances<br>{elbow_pct=:.1%}, {elbow_cutoff=:.1f}, {alpha=:.1%}, {target_cutoff=:.1f}"
+    title = f"Sorted Mahalanobis Distances (Squared)<br>{elbow_pct=:.1%}, {elbow_cutoff=:.1f}, {alpha=:.1%}, {target_cutoff=:.1f}"
     fig = px.scatter(y=sorted_scores, title=title)
-    fig.update_layout(xaxis_title=None, yaxis_title="Score")
+    fig.update_layout(xaxis_title=None, yaxis_title="Squared Distance")
     fig.update_layout(template="none")
     fig.add_hline(
         y=elbow_cutoff,
@@ -91,14 +99,16 @@ def main(table_nm: str = "sales") -> None:
     # How to tune the contaminaiton score: Find the point on the graph where the curve suddenly spikes upward. The percentage of points after that spike is your ideal contamination rate.
 
     data = feathr.load(table_nm)
-    arr = data.select("sales_qty_lg", "sales_amt_lg").to_numpy()
+    arr = data.select("sales_qty_lg", "sales_amt_lg").fill_nan(None).to_numpy()
+    arr = impute_missing(arr)
+    alpha: float = 0.10
 
-    clf = MCD(contamination=0.1, random_state=42)
+    clf = MCD(contamination=alpha, random_state=42)
     clf.fit(arr)
     scores = clf.decision_scores_
     sorted_scores = np.sort(scores)
     elbow = get_elbow_cutoff(sorted_scores)
-    target = get_target_cutoff(sorted_scores, alpha=0.10)
+    target = get_target_cutoff(sorted_scores, alpha=alpha)
     fig = maha_dist_plot(
         sorted_scores,
         elbow_pct=elbow["pct"],
