@@ -82,6 +82,7 @@ class PlyOutlHist(Ply):
             #     fig.add_trace(trace, row=i, col=COL)
             if not self.without_outl:
                 self.add_rect(fig, var=var, irow=irow, icol=COL)
+        fig.update_layout(title=self.title)
         fig.update_layout(showlegend=False)
         fig.update_layout(template="simple_white")
         # fig.update_layout(plot_bgcolor="gainsboro", paper_bgcolor="gainsboro")

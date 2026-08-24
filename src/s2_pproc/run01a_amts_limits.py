@@ -15,3 +15,4 @@ def main(table_nm: str = "sales") -> None:
     # print(screenr)
     feathr.save(screenr.summ, name="survey_amts")
     screenr.tabl.show()
+    # cols=("sales_qty_lg", "sales_amt_lg")

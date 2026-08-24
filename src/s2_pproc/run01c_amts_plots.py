@@ -17,5 +17,6 @@ def main(table_nm: str = "sales") -> None:
     ply_outl_freq = PlyOutlHist(
         table_nm, data=data_sel, stats=stats, nbins=20, without_outl=False
     )
+    ply_outl_freq.title = f"Frequencies with outlier for '{table_nm}'"
     fig = ply_outl_freq.fig
     fig.show()

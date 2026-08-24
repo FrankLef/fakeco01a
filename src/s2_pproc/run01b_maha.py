@@ -12,6 +12,8 @@ def main(table_nm: str = "sales") -> None:
         table_nm, data=data, cols=("sales_qty_lg", "sales_amt_lg"), alpha=0.10
     )
     screenr.execute()
+    tabl = screenr.tabl
+    tabl.show()
     fig = screenr.elbow_plot
     fig.show()
     data = screenr.data
