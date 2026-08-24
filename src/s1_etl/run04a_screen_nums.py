@@ -1,4 +1,4 @@
-from flml.screener.nums import NumsScreener
+from flml.screener.cols.nums import NumsScreener
 
 from src._registry.main import feathr
 

@@ -1,4 +1,4 @@
-from flml.screener.cats import CatsScreener
+from flml.screener.cols.cats import CatsScreener
 
 from src._registry.main import feathr
 

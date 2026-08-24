@@ -1,5 +1,5 @@
 from rich.console import Console
-from flml.screener.feats import FeatsScreener
+from flml.screener.cols.feats import FeatsScreener
 
 from src._registry.main import feathr
 

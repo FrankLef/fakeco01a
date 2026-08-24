@@ -1,4 +1,4 @@
-from flml.screener.strs import StrsScreener
+from flml.screener.cols.strs import StrsScreener
 
 from src._registry.main import feathr
 
