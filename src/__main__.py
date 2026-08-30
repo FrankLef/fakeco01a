@@ -24,7 +24,7 @@ def pipe(jobs: str, pat: str | None = None) -> None:
     Returns:
         int: The sum of all the integers returned by the jobs.
     """
-    jobrun.execute(job_args=jobs)
+    jobrun.execute(job_args=jobs, file_pat=pat)
 
 
 @app.command()
@@ -38,7 +38,7 @@ def all(pat: str | None = None) -> None:
         int: Integer returned by the process.
     """
     jobs = "setup", "etl", "pproc", "rollup", "survey", "outl", "eda"
-    jobrun.execute(job_args=jobs)
+    jobrun.execute(job_args=jobs, file_pat=None)
 
 
 if __name__ == "__main__":

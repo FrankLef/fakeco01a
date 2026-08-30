@@ -10,7 +10,7 @@ def add_outliers(
 ) -> pl.DataFrame:
     cols = ("sales_qty_lg", "sales_amt_lg")
     outliers = screenr.get_outliers(cols)
-    msg = f"Univariate outliers added in column '{new_col}'\n{new_col}: nb outl={sum(outliers)}, nb data={len(outliers)}, outl pct={sum(outliers) / len(outliers):.1%}"
+    msg = f"Univariate outliers added in column '{new_col}'\nnb outl={sum(outliers)}, nb data={len(outliers)}, outl pct={sum(outliers) / len(outliers):.1%}"
     print(msg)
     # Convert to a Series FIRST, then attach it. Otherwise you end up with list(Boolean) in the schema
     data = data.with_columns(pl.Series(outliers, dtype=pl.Boolean).alias(new_col))

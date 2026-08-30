@@ -14,3 +14,7 @@ def main(table_nm: str = "sales") -> None:
     print(f"{screenr.freq_tol=}, {screenr.uniq_tol=}")
     print(screenr)
     screenr.tabl.show()
+
+
+if __name__ == "__main__":
+    main()

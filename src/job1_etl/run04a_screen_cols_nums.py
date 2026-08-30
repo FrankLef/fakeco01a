@@ -11,6 +11,9 @@ def main(table_nm: str = "sales") -> None:
     screenr.title = f"Screen numerical columns: '{table_nm}'".title()
     screenr.execute()
     screenr.print()
-    # print(f"{screenr.nzv_tol=}")
     print(screenr)
     screenr.tabl.show()
+
+
+if __name__ == "__main__":
+    main()

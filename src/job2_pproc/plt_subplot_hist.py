@@ -5,6 +5,7 @@ def plt(
     plot_bgcolor: str = "white", paper_bgcolor: str = "ghostwhite"
 ) -> go.layout.Template:
     """Plotly template for subplot of histograms."""
+    # x = 1 / 0
     plt = go.layout.Template()
     plt.layout = dict(
         xaxis=dict(showgrid=False, zeroline=False),

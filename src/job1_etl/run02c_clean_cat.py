@@ -44,3 +44,7 @@ def main(table_nm: str = "sales") -> None:
     # print(data.glimpse(max_items_per_column=3))
     # breakpoint()
     feathr.save(data, name=table_nm)
+
+
+if __name__ == "__main__":
+    main()

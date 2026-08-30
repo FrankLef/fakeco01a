@@ -22,3 +22,7 @@ def main() -> None:
         #     qry = f"CREATE OR REPLACE TABLE {new_nm} AS SELECT * FROM data;"
         #     conn.sql(qry)
         #     qry = f"ALTER TABLE ADD PRIMARY KEY ({PK})"
+
+
+if __name__ == "__main__":
+    main()

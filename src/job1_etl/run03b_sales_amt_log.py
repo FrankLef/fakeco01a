@@ -17,3 +17,7 @@ def main() -> None:
             col_lg = col + suffix
             data = data.with_columns(pl.col(col).map_batches(lg.log1ps10).alias(col_lg))
         feathr.save(data, tbl)
+
+
+if __name__ == "__main__":
+    main()

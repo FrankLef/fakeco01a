@@ -19,3 +19,7 @@ def main() -> None:
     #     conn.sql(qry)
     #     qry = f"UPDATE {table_nm} SET {col} = sales_qty * sales_price;"
     #     conn.sql(qry)
+
+
+if __name__ == "__main__":
+    main()

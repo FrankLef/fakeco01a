@@ -14,3 +14,7 @@ def main() -> None:
             conn.register(view_name="data", python_object=data)
             qry: str = f"CREATE OR REPLACE TABLE {tbl} AS SELECT * FROM data;"
             conn.sql(qry)
+
+
+if __name__ == "__main__":
+    main()

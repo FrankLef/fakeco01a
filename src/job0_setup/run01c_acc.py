@@ -12,7 +12,7 @@ def main() -> None:
     conn = inst_acc(db_choice="db")
     check = conn.test_connect()
     if check:
-        msg: str = "MS Access connect is ok."
+        msg: str = "✅" + " MS Access connect is ok."
         rprint(msg)
 
 

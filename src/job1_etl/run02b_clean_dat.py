@@ -21,3 +21,7 @@ def main(table_nm: str = "sales") -> None:
     #         data = data.with_columns(pl.col(var).str.to_date())
     #     qry = f"CREATE OR REPLACE TABLE {table_nm} AS SELECT * FROM data;"
     #     conn.sql(qry)
+
+
+if __name__ == "__main__":
+    main()

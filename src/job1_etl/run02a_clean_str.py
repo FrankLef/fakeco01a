@@ -27,3 +27,7 @@ def main(table_nm: str = "sales") -> None:
     data = feathr.load(table_nm)
     data = clean_str(data)
     feathr.save(data, name=table_nm)
+
+
+if __name__ == "__main__":
+    main()
