@@ -3,8 +3,8 @@ import polars.selectors as cs
 import plotly.graph_objects as go
 
 from src._registry.main import feathr
-from .ply_outl_hist import PlyOutlHist
-from .plt_subplot_hist import plt
+from job2_pproc.ply_outl_hist import PlyOutlHist
+from job2_pproc.plt_subplot_hist import plt
 
 
 def get_data(data: pl.DataFrame, without_outl: bool) -> pl.DataFrame:
@@ -36,13 +36,13 @@ def main(table_nm: str = "sales") -> None:
     stats = feathr.load("survey_amts")
     data_sel = get_data(data, without_outl=False)
     data_plot = data_sel.select(cs.numeric())
-    for nbins in (20, 30):
+    for without_outl in (False, True):
         fig = get_figure(
-            data_plot, stats=stats, table_nm=table_nm, nbins=nbins, without_outl=False
-        )
-        fig.show()
-        fig = get_figure(
-            data_plot, stats=stats, table_nm=table_nm, nbins=nbins, without_outl=True
+            data_plot,
+            stats=stats,
+            table_nm=table_nm,
+            nbins=30,
+            without_outl=without_outl,
         )
         fig.show()
 
