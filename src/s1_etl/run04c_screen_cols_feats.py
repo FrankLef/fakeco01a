@@ -1,3 +1,5 @@
+"""Detect columns, regardless of dtype, to remove using ML technieques."""
+
 from rich.console import Console
 from flml.screener.cols.feats import FeatsScreener
 

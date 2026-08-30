@@ -1,3 +1,5 @@
+"""Clean the string columns."""
+
 import polars as pl
 import polars.selectors as cs
 

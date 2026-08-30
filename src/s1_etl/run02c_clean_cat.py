@@ -1,4 +1,4 @@
-"""Create categories columns to use for encoding."""
+"""Create categories columns."""
 
 import polars as pl
 import polars.selectors as cs

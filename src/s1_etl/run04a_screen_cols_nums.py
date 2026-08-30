@@ -1,3 +1,5 @@
+"""Detect numerical columns to remove."""
+
 from flml.screener.cols.nums import NumsScreener
 
 from src._registry.main import feathr

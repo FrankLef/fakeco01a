@@ -39,7 +39,7 @@ class PlyOutlHist(Ply):
 
     def execute(self) -> go.Figure:
         figs = self.create_histograms()
-        fig = self.create_base(figs)
+        fig = self.create_plot(figs)
         return fig
 
     def create_histograms(self) -> go.Figure:
@@ -69,7 +69,7 @@ class PlyOutlHist(Ply):
             figs[col] = obj
         return figs
 
-    def create_base(self, figs: dict[str, go.Figure]) -> go.Figure:
+    def create_plot(self, figs: dict[str, go.Figure]) -> go.Figure:
         COL: Final[int] = 1
         fig = make_subplots(
             rows=len(figs),
@@ -84,7 +84,7 @@ class PlyOutlHist(Ply):
                 self.add_rect(fig, var=var, irow=irow, icol=COL)
         fig.update_layout(title=self.title)
         fig.update_layout(showlegend=False)
-        fig.update_layout(template="simple_white")
+        fig.update_layout(template="plotly_white")
         # fig.update_layout(plot_bgcolor="gainsboro", paper_bgcolor="gainsboro")
         return fig
 

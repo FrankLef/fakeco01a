@@ -1,3 +1,5 @@
+"""Detect string/categorical columns to removed."""
+
 from flml.screener.cols.strs import StrsScreener
 
 from src._registry.main import feathr

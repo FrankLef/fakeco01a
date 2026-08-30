@@ -1,3 +1,5 @@
+"""Create sales stable in duckddb."""
+
 from src._registry.main import feathr, get_conn
 
 
