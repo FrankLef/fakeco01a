@@ -45,3 +45,7 @@ def main(table_nm: str = "sales") -> None:
             data_plot, stats=stats, table_nm=table_nm, nbins=nbins, without_outl=True
         )
         fig.show()
+
+
+if __name__ == "__main__":
+    main()
