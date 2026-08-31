@@ -4,11 +4,13 @@ import typer
 from pathlib import Path
 
 from fltk.jobrun.main import JobRun
+# from fltk.jobflow.main import JobFlow
 
 app = typer.Typer()
 
 project_path = Path(__file__).parents[1]
-jobrun = JobRun(project_path, work_dirs=["src"])
+process = JobRun(project_path, work_dirs=["src"])
+# process = JobFlow(project_path, work_dirs=["src"])
 
 
 @app.command()
@@ -24,7 +26,7 @@ def pipe(jobs: str, pat: str | None = None) -> None:
     Returns:
         int: The sum of all the integers returned by the jobs.
     """
-    jobrun.execute(job_args=jobs, file_pat=pat)
+    process.execute(job_args=jobs, file_pat=pat)
 
 
 @app.command()
@@ -37,8 +39,8 @@ def all(pat: str | None = None) -> None:
     Returns:
         int: Integer returned by the process.
     """
-    jobs = "setup", "etl", "pproc", "rollup", "survey", "outl", "eda"
-    jobrun.execute(job_args=jobs, file_pat=None)
+    jobs = "setup, etl, pproc, rollup, survey, outl, eda"
+    process.execute(job_args=jobs, file_pat=None)
 
 
 if __name__ == "__main__":

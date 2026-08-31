@@ -22,8 +22,7 @@ def main(table_nm: str = "sales") -> None:
     screenr = UnivScreener(table_nm, data=data, alpha=0.05, kgstd=2)
     screenr.execute()
     data = add_outliers(data, screenr=screenr)
-    # breakpoint()
-    screenr.tabl.show()
+    # screenr.tabl.show()
     feathr.save(screenr.summ, name="survey_amts")
     feathr.save(data, name=table_nm)
 

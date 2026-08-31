@@ -44,7 +44,8 @@ def main(table_nm: str = "sales") -> None:
             nbins=30,
             without_outl=without_outl,
         )
-        fig.show()
+        if False:
+            fig.show()
 
 
 if __name__ == "__main__":
